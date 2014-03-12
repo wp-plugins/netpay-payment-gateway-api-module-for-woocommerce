@@ -50,6 +50,10 @@ Easy steps to install the plugin:
 
 
 == Screenshots ==
+1. NetPay Logo
+2. Checkout Sample
+3. WooCommerce Settings
+4. Plugin Configuration
 
 == Changelog ==
 
