@@ -2,11 +2,12 @@
 /*
    Plugin Name: NetPay API Payment Method For WooCommerce
    Description: Extends WooCommerce to Process Payments with NetPay's API Method. 'When deactivating this module, it will remove all stored token'.
-   Version: 1.0.0
+   Version: 1.0.1
    Plugin URI: http://netpay.co.uk
    Author: NetPay
    Author URI: http://www.netpay.co.uk/
    License: Under GPL2 
+   Note: Tested with WP3.8.2 and WP3.9 , WooCommerce version 2.0.20 and compatible with version 2.1.7
 */
 
 register_activation_hook(__FILE__,'netpay_install');
@@ -621,10 +622,16 @@ function woocommerce_tech_netpayapi_init() {
 					$woocommerce->cart->empty_cart();
 					// Return thank you redirect
 					$order = new WC_Order($order_id);
-					$redirect_url =  add_query_arg('order',
-											  $order->id, 
-											  add_query_arg('key', $order->order_key, 
-											  get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+						$redirect_url =  add_query_arg(	'order',
+														$order->id, 
+														add_query_arg('key', $order->order_key, 
+														get_permalink(get_option('woocommerce_thanks_page_id'))));
+
+		            } else {
+						$redirect_url =  add_query_arg('key', $order->order_key, $this->get_return_url( $order ) );
+				    }
+
 					$this->web_redirect( $redirect_url);
 					exit;
 	
@@ -749,10 +756,14 @@ function woocommerce_tech_netpayapi_init() {
 						$this->delete_from_memory_table();
 						
 						$order = new WC_Order($order_id);
-						$redirect_url =  add_query_arg('order',
-												  $order->id, 
-												  add_query_arg('key', $order->order_key, 
-												  get_permalink(get_option('woocommerce_thanks_page_id'))));
+						if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+							$redirect_url =  add_query_arg(	'order',
+											$order->id, 
+											add_query_arg('key', $order->order_key, 
+											get_permalink(get_option('woocommerce_thanks_page_id'))));
+						} else {
+							$redirect_url =  add_query_arg('key', $order->order_key, $this->get_return_url( $order ) );
+						}
 						$this->web_redirect( $redirect_url);
 						exit;
 					} else {
@@ -897,10 +908,14 @@ function woocommerce_tech_netpayapi_init() {
 				$order->payment_complete();
 				$woocommerce->cart->empty_cart();
 				// Return thank you redirect
-				$redirect_url =  add_query_arg('order',
-											  $order->id, 
-											  add_query_arg('key', $order->order_key, 
-											  get_permalink(get_option('woocommerce_thanks_page_id'))));
+				if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+					$redirect_url =  add_query_arg(	'order',
+									$order->id, 
+									add_query_arg('key', $order->order_key, 
+									get_permalink(get_option('woocommerce_thanks_page_id'))));
+				} else {
+					$redirect_url =  add_query_arg('key', $order->order_key, $this->get_return_url( $order ) );
+				}
 				$this->web_redirect( $redirect_url);
 				exit;
 
@@ -971,7 +986,13 @@ function woocommerce_tech_netpayapi_init() {
 			$order = new WC_Order( $order_id );
 			$params = array();
 
-			$currency = $order->order_custom_fields['_order_currency'][0];
+			// Change for 2.1
+			if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+				$currency = $order->order_custom_fields['_order_currency'][0];
+			} else {
+				$order_meta = get_post_custom( $order_id );
+				$currency = $order_meta['_order_currency'][0];
+			}
 			
 			/* merchant parameters */
 			$params['merchant']['merchant_id'] 	 	= 	$this->netpayapi_merchant_id;
@@ -1013,9 +1034,15 @@ function woocommerce_tech_netpayapi_init() {
 			
 			/* parameters for 3DS payment */
 			$ddd_secure_id = $order_id.time();
-			$redirect_url=(get_option('woocommerce_thanks_page_id')!='') ? get_permalink(get_option('woocommerce_thanks_page_id')): get_site_url().'/' ;
-			$relay_url = add_query_arg( array('wc-api' => get_class( $this ) ,'order_id' => $order_id  ), $redirect_url );
-		
+			
+			if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+				$redirect_url=(get_option('woocommerce_thanks_page_id')!='') ? get_permalink(get_option('woocommerce_thanks_page_id')): get_site_url().'/' ;
+				$relay_url = add_query_arg( array('wc-api' => get_class( $this ) ,'order_id' => $order_id  ), $redirect_url );
+			} else {
+				$redirect_url=(get_option('woocommerce_thanks_page_id')!='') ? $this->get_return_url( $order ): get_site_url().'/' ;
+				$relay_url = add_query_arg( array('wc-api' => get_class( $this ) ,'order_id' => $order_id  ), $redirect_url );
+			}
+			
 			$params['ddd_secure_id'] 	 = $ddd_secure_id;
 			$params['ddd_secure_redirect']['page_generation_mode']	= 'SIMPLE';
 			$params['ddd_secure_redirect']['response_url']	 		= $relay_url;
@@ -1030,7 +1057,13 @@ function woocommerce_tech_netpayapi_init() {
 			
 			$params = array();
 			
-			$currency = $order->order_custom_fields['_order_currency'][0];
+			// Change for 2.1
+			if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+				$currency = $order->order_custom_fields['_order_currency'][0];
+			} else {
+				$order_meta = get_post_custom( $order_id );
+				$currency = $order_meta['_order_currency'][0];
+			}
 			
 			/* merchant parameters */
 			$params['merchant']['merchant_id'] 	 	= 	$this->netpayapi_merchant_id;
