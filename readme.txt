@@ -24,6 +24,7 @@ When 3D Secure Card Validation is enabled, the payer will be redirected to issue
 When Tokenization is enabled, merchant can able to store the payer’s card information against a Token on NetPay’s secure servers. The payer can able to give permission to Merchant to store card information on checkout page.
 
 Merchant needs to obtain SSL Certification and PCI DSS Certification.
+
 Tested with WP3.8.2 and WP3.9 , WooCommerce version 2.0.20 and compatible with version 2.1.7
 
 = Features =
