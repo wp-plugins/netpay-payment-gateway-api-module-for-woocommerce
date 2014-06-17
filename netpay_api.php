@@ -48,7 +48,13 @@ class Connection {
     //In case of error those will be set
     private $error_code;
     private $error_string;
-            
+         
+	//SSL Client Certiicate
+    private $use_ssl_auth = FALSE; //By default all API request need to use ssl, Download your test ssl form merchant portal
+    private $ssl_certificate_path = ''; //Full path of your ssl certificate
+    private $ssl_key_path = ''; //Full path or your ssl private key
+    private $ssl_key_password = ''; //Password for your key if any
+		 
     /**
      * Checks if cURL is available and sets basic
      * data for all calls for object
@@ -257,7 +263,7 @@ class Connection {
         $this->curl_init_connection();
         
         $this->curl_no_error_fail();
-        $this->curl_set_ssl(FALSE);
+		$this->curl_set_ssl();
         $this->curl_apply_headers();
         $this->curl_apply_options();
         
@@ -505,15 +511,20 @@ class Connection {
     /**
      * Changes behaviour of ssl check for cURL
      */
-    private function curl_set_ssl($verify_peer = TRUE, $verify_host = 2, $path_to_cert = NULL) {
-        if ($verify_peer) {
-            $this->curl_add_option(CURLOPT_SSL_VERIFYPEER, TRUE);
+	public function curl_set_ssl($verify_peer = FALSE, $verify_host = 2) {
+        if($this->use_ssl_auth){
+            $this->curl_add_option(CURLOPT_SSL_VERIFYPEER, $verify_peer);
             $this->curl_add_option(CURLOPT_SSL_VERIFYHOST, $verify_host);
-            $this->curl_add_option(CURLOPT_CAINFO, $path_to_cert);
-        }
-        else {
-            $this->curl_add_option(CURLOPT_SSL_VERIFYPEER, FALSE);
-        }
+            $this->curl_add_option(CURLOPT_SSLCERT, $this->ssl_certificate_path);
+            $this->curl_add_option(CURLOPT_SSLKEY, $this->ssl_key_path);
+
+            // if there is no password
+            if ($this->ssl_key_password!='')
+                $this->curl_add_option(CURLOPT_SSLCERTPASSWD, $this->ssl_key_password);
+         }
+         else{
+             $this->curl_add_option(CURLOPT_SSL_VERIFYPEER, FALSE);
+         }
         return $this;
     }
     

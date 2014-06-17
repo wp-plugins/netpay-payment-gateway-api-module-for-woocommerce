@@ -1,22 +1,31 @@
 === Plugin Name ===
 NetPay Payment Gateway API Module For WooCommerce
-Contributors: Dotsquares
+Contributors: NetPay
 Donate link: 
 Tags: woocommerce netpay, netpay.co.uk, payment gateway, woocommerce, woocommerce payment gateway
 Requires at least: 3.0.1
-Tested up to: 3.9
+Tested up to: 3.9.1
 Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This Payment Gateway For WooCommerce extends the functionality of WooCommerce to accept payments from credit/debit cards using netpay.co.uk Gateway
-Tested with WP3.8.2 and WP3.9.1 , WooCommerce version 2.0.20 and compatible with version 2.1.11
 
 == Description ==
 
-<h3>NetPay Payment Gateway for WooCommerce</h3> makes your website ready to use NetPay payment gateway to accept credit/debit cards on your ecommerce store in safe way. 
+<h3>NetPay Payment Gateway for WooCommerce</h3> makes your website ready to use NetPay API Method to accept credit/debit cards on your ecommerce store in safe way. 
 
-NetPay is most widely used payment gateway to process payments online and accepts Visa, MasterCard, Discover and other variants of cards.
+NetPay is most widely used payment gateway to process payments online and accepts Visa, MasterCard, Maestro, Amex, Dinners, and other variants of cards.
+
+With API Integration Method the payer will enter the card information on Merchant’s e-commerce web site. The plugin fully support 3D Secure Card Validation and Tokenization. All these features are optional and Merchant can enable or disable on module configuration.
+
+When 3D Secure Card Validation is enabled, the payer will be redirected to issuer bank’s validation page if the card supports 3D Secure Validation. Once the card validated by the bank, the payer will be redirected to Merchant’s e-commerce web site and payment will process. After successful payment, the payer will be redirected to Merchant’s confirmation page otherwise if any error occurred, the payer will be notified with error message on checkout page.
+
+When Tokenization is enabled, merchant can able to store the payer’s card information against a Token on NetPay’s secure servers. The payer can able to give permission to Merchant to store card information on checkout page.
+
+Merchant needs to obtain SSL Certification and PCI DSS Certification.
+
+Tested with WP3.8.2 and WP3.9.1 , WooCommerce version 2.0.20 and compatible with version 2.1.11
 
 = Features =
 Few features of this plugin:
@@ -40,13 +49,22 @@ Easy steps to install the plugin:
 7. Enter the API details (Merchant Id, Merchant Login, Password)
 
 == Frequently Asked Questions ==
-
+= What version of Wordpress and Woocommerce does this work with? =
+* Version 1.0.7 has been tested with Wordpress 3.8.2 through to 3.9.1 , WooCommerce version 2.0.20 through to version 2.1.11
 
 == Screenshots ==
 
+1. NetPay Logo
+2. Checkout Sample
+3. WooCommerce Settings
+4. Plugin Configuration
 
 == Changelog ==
+
 = 1.0.2 =
+* Added changes so that client certificate can be used easily
+* Use billing address for shipping if shipping address is not available
+* Strict string checks and 3ds url fix
 * Fixed issue getting price when proceed to checkout
 * Updated all redirects for full woocommerce 2.1.x compatability
 * Changed variable names
@@ -58,8 +76,6 @@ Easy steps to install the plugin:
 * First Version
 
 == Upgrade Notice ==
-*No Upgrade Required
+* Please upgrade to 1.0.2 for full functionality
 
 == Arbitrary section ==
-
-
