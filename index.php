@@ -2,7 +2,7 @@
 /*
    Plugin Name: NetPay API Payment Method For WooCommerce
    Description: Extends WooCommerce to Process Payments with NetPay's API Method. 'When deactivating this module, it will remove all stored token'.
-   Version: 1.0.1
+   Version: 1.0.4
    Plugin URI: http://netpay.co.uk
    Author: NetPay
    Author URI: http://www.netpay.co.uk/
@@ -194,7 +194,7 @@ function woocommerce_tech_netpayapi_init() {
 			echo '<p>'.__('NetPay is most popular payment gateway for online payment processing').'</p>';
 			echo '<table class="form-table">';
 			$this->generate_settings_html();
-			echo '<tr><td>(Module Version 1.0.0)</td></tr></table>';
+			echo '<tr><td>(Module Version 1.0.4)</td></tr></table>';
 		}
       
 		/* Returns url */
@@ -1136,13 +1136,22 @@ function woocommerce_tech_netpayapi_init() {
 				$params['order']['order_items'][$itemCnt]['item_id'] 		  = $cartItem['product_id'];
 				$params['order']['order_items'][$itemCnt]['item_name'] 		  = $cartItem['data']->post->post_name;
 				$params['order']['order_items'][$itemCnt]['item_description'] = substr($cartItem['data']->post->post_content,0,97)."...";//max 100 character
-				$params['order']['order_items'][$itemCnt]['item_quantity'] 	  = $cartItem['quantity'];
+				$params['order']['order_items'][$itemCnt]['item_quantity'] 	  = preg_replace( "/[^0-9]/", "", $cartItem['quantity'] );
 				
-				// check if sale price is available otherwise, assign regular price
-				if(get_post_meta( $cartItem['product_id'], '_sale_price', true) != ''){ 
-					$productPrice = get_post_meta( $cartItem['product_id'], '_sale_price', true);
+                if (version_compare(WOOCOMMERCE_VERSION, '2.1', '<')) {
+					// check if sale price is available otherwise, assign regular price
+					if(get_post_meta( $cartItem['product_id'], '_sale_price', true) != ''){
+						$productPrice = get_post_meta( $cartItem['product_id'], '_sale_price', true);
+					} else {
+						$productPrice = get_post_meta( $cartItem['product_id'], '_regular_price', true);
+					}
 				} else {
-					$productPrice = get_post_meta( $cartItem['product_id'], '_regular_price', true);
+					// check if sale price is available otherwise, assign regular price
+					if($cartItem['data']->sale_price != ''){
+						$productPrice = $cartItem['data']->sale_price;
+					} else {
+						$productPrice = $cartItem['data']->regular_price;
+					}
 				}
 				
 				$params['order']['order_items'][$itemCnt]['item_price'] = $productPrice;
