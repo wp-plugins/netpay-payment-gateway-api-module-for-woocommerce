@@ -1021,8 +1021,6 @@ function woocommerce_tech_netpayapi_init() {
 			}else{
 				if($this->get_post('expmonth')<10){
 					$expMonth = "0".$this->get_post('expmonth');
-				} else {
-					$expMonth = "0".$this->get_post('expmonth');
 				}
 				$params['payment_source']['type'] 						 	= 	'CARD';
 				$params['payment_source']['card']['card_type'] 			 	= 	strtoupper($this->get_post('cardtype'));
@@ -1098,8 +1096,6 @@ function woocommerce_tech_netpayapi_init() {
 				$params['payment_source']['card']['security_code']= $tokenCvv;
 			}else{
 				if($this->get_post('expmonth')<10){
-					$expMonth = "0".$this->get_post('expmonth');
-				} else {
 					$expMonth = "0".$this->get_post('expmonth');
 				}
 				

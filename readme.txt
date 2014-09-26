@@ -5,7 +5,7 @@ Donate link:
 Tags: woocommerce netpay, netpay.co.uk, payment gateway, woocommerce, woocommerce payment gateway
 Requires at least: 3.0.1
 Tested up to: 3.9.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,8 @@ Easy steps to install the plugin:
 4. Plugin Configuration
 
 == Changelog ==
+= 1.0.3 = 
+* Bug fixes of card expiry date
 
 = 1.0.2 =
 * Added changes so that client certificate can be used easily
