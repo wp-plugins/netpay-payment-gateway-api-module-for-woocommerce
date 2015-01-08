@@ -2,12 +2,12 @@
 /*
    Plugin Name: NetPay API Payment Method For WooCommerce
    Description: Extends WooCommerce to Process Payments with NetPay's API Method. 'When deactivating this module, it will remove all stored token'.
-   Version: 1.0.2
+   Version: 1.0.3
    Plugin URI: http://netpay.co.uk
    Author: NetPay
    Author URI: http://www.netpay.co.uk/
    License: Under GPL2 
-   Note: Tested with WP3.8.2 and WP3.9.1 , WooCommerce version 2.0.20 and compatible with version 2.1.11
+   Note: Tested with WP3.8.2 and WP4.1 , WooCommerce version 2.0.20 and compatible with version 2.2.10
 */
 
 register_activation_hook(__FILE__,'netpay_install');
@@ -194,7 +194,7 @@ function woocommerce_tech_netpayapi_init() {
 			echo '<p>'.__('NetPay is most popular payment gateway for online payment processing').'</p>';
 			echo '<table class="form-table">';
 			$this->generate_settings_html();
-			echo '<tr><td>(Module Version 1.0.7)</td></tr></table>';
+			echo '<tr><td>(Module Version 1.0.3)</td></tr></table>';
 		}
       
 		/* Returns url */
@@ -800,16 +800,20 @@ function woocommerce_tech_netpayapi_init() {
 					exit;
 				}
 			} else { 
-				// remvoe data from temp table
+				// remove data from temp table
 				$this->delete_from_memory_table();
 				
 				// Request to delete token from server as token created was pernament and payment failed.
 				if($tokenMode == 'card'){
 					$this->request_delete_token($storedToken);
 				}
-					
-				$msg = "Following error occured:<br>".$response->error->explanation."<br>
-									<a href='".get_bloginfo('url')."/checkout/'>Click to continue</a>.";
+				if( strtoupper($response->result) == 'ERROR') {
+				    $msg = "Following error occured:<br>".$response->error->explanation."<br>
+                                        <a href='".get_bloginfo('url')."/checkout/'>Click to continue</a>.";
+				} else {
+				    $msg = "Following error occured:<br>".strtoupper($response->result)." CURL:".$response->error_code." ".$response->error_string. "<br>
+					    				<a href='".get_bloginfo('url')."/checkout/'>Click to continue</a>.";
+				}
 				$this->show_error($msg);
 				exit;
 				
@@ -1019,9 +1023,9 @@ function woocommerce_tech_netpayapi_init() {
 				$params['payment_source']['type']  				  = 'TOKEN';
 				$params['payment_source']['token'] 				  = $this->mcrypt_decrypt_cbc($userTokenArray[$tokenIndex],$this->enc_key,$this->enc_iv);
 			}else{
-				if($this->get_post('expmonth')<10){
-					$expMonth = "0".$this->get_post('expmonth');
-				}
+				$expMonth = $this->get_post('expmonth');
+				$expMonth = (strlen($expMonth) == 1)? '0'.$expMonth:$expMonth;
+
 				$params['payment_source']['type'] 						 	= 	'CARD';
 				$params['payment_source']['card']['card_type'] 			 	= 	strtoupper($this->get_post('cardtype'));
 				$params['payment_source']['card']['number'] 				= 	$this->get_post('ccnum');
@@ -1095,9 +1099,8 @@ function woocommerce_tech_netpayapi_init() {
 				
 				$params['payment_source']['card']['security_code']= $tokenCvv;
 			}else{
-				if($this->get_post('expmonth')<10){
-					$expMonth = "0".$this->get_post('expmonth');
-				}
+				$expMonth = $this->get_post('expmonth');
+				$expMonth = (strlen($expMonth) == 1)? '0'.$expMonth:$expMonth;
 				
 				$params['payment_source']['type'] 						 	= 	'CARD';
 				$params['payment_source']['card']['card_type'] 			 	= 	strtoupper($this->get_post('cardtype'));
@@ -1216,13 +1219,10 @@ function woocommerce_tech_netpayapi_init() {
 			$token_params['merchant']['operation_mode']	= $this->operation_mode();
 			
 			$token_params['transaction']['source']	 	= "INTERNET";
-			
-			
-			if($this->get_post('expmonth')<10){
-				$expMonth = "0".$this->get_post('expmonth');
-			} else {
-				$expMonth = "0".$this->get_post('expmonth');
-			}
+						
+			$expMonth = $this->get_post('expmonth');
+			$expMonth = (strlen($expMonth) == 1)? '0'.$expMonth:$expMonth;
+
 			$fullname = '';
 			if($this->get_post('cc_title') != ''){
 				$params['payment_source']['card']['holder']['title'] 	= 	$this->get_post('cc_title');
@@ -1773,4 +1773,3 @@ function woocommerce_tech_netpayapi_init() {
 	
 	
 }
-

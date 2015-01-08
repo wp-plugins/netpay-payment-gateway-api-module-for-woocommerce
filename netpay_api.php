@@ -1,9 +1,17 @@
 <?php
+/*
+Plugin Name: NetPay API Payment Method For WooCommerce
+Description: Extends WooCommerce to Process Payments with NetPay's API Method. 'When deactivating this module, it will remove all stored token'.
+Version: 1.0.3
+Plugin URI: http://netpay.co.uk
+Author: NetPay
+Author URI: http://www.netpay.co.uk/
+License: Under GPL2
+Note: Tested with WP3.8.2 and WP4.1 , WooCommerce version 2.0.20 and compatible with version 2.2.10
 
-/**
- * Rest Connection class that allows to perform basic
- * operations and get their result
- */
+Rest Connection class that allows to perform basic operations and get their result
+*/
+
 class Connection {
 
     //Formats of data for content-type and accept headers supported by application
@@ -46,8 +54,8 @@ class Connection {
     private $response_code;
     
     //In case of error those will be set
-    private $error_code;
-    private $error_string;
+    public $error_code;
+    public $error_string;
          
 	//SSL Client Certiicate
     private $use_ssl_auth = FALSE; //By default all API request need to use ssl, Download your test ssl form merchant portal
